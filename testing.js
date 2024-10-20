@@ -1,8 +1,46 @@
-// Function to speak a text using the Web Speech API
+// Elements for video and canvas streaming
+const localVideo = document.getElementById('localVideo');
+const outputCanvas = document.getElementById('outputCanvas');
+const responseElement = document.getElementById('response');
+
+// Get the canvas context
+const outputContext = outputCanvas.getContext('2d');
+
+// Function to start the webcam stream
+async function startWebcamStream() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+
+        // Display local webcam stream
+        localVideo.srcObject = stream;
+
+        // Start drawing the video to the canvas
+        drawToCanvas();
+
+    } catch (err) {
+        console.error('Error accessing webcam or microphone:', err);
+    }
+}
+
+// Function to draw the video to the canvas with mirror effect
+function drawToCanvas() {
+    // Set an interval to draw the video every 100 milliseconds
+    setInterval(() => {
+        // Clear the previous frame
+        outputContext.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
+
+        // Flip the image horizontally (mirror effect) and draw it to the canvas
+        outputContext.save();
+        outputContext.scale(-1, 1); // Flip horizontally
+        outputContext.drawImage(localVideo, -outputCanvas.width, 0, outputCanvas.width, outputCanvas.height);
+        outputContext.restore();
+    }, 100); // Draw every 100ms
+}
+
+// Voice Recognition Functions
 function speakText(text, callback) {
     const utterance = new SpeechSynthesisUtterance(text);
 
-    // Once speech ends, invoke the callback (start recognition)
     utterance.onend = () => {
         if (callback) callback();
     };
@@ -10,7 +48,6 @@ function speakText(text, callback) {
     window.speechSynthesis.speak(utterance);
 }
 
-// Function to start voice recognition
 function startVoiceRecognition() {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
@@ -25,11 +62,10 @@ function startVoiceRecognition() {
     };
 
     recognition.onerror = (event) => {
-        document.getElementById('response').textContent = 'Error: ' + event.error;
+        responseElement.textContent = 'Error: ' + event.error;
     };
 }
 
-// Function to handle the user's response and convert it to numeric values
 function handleResponse(response) {
     let numericValue;
     switch (response) {
@@ -52,15 +88,13 @@ function handleResponse(response) {
             numericValue = 'Unrecognized response';
     }
 
-    // Display the response and its numeric value
-    document.getElementById('response').textContent = `You said: ${response}, Numeric value: ${numericValue}`;
+    responseElement.textContent = `You said: ${response}, Numeric value: ${numericValue}`;
 }
 
-// Select the buttons
+// Set up event listeners for voice questions
 const button1 = document.getElementById("question1");
 const button2 = document.getElementById("question2");
 
-// Add event listeners for the buttons
 button1.addEventListener("click", () => {
     speakText("How are you?", startVoiceRecognition);
 });
@@ -68,3 +102,6 @@ button1.addEventListener("click", () => {
 button2.addEventListener("click", () => {
     speakText("How old are you?", startVoiceRecognition);
 });
+
+// Initialize webcam stream and media recorder
+window.onload = startWebcamStream;

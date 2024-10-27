@@ -6,45 +6,66 @@ const responseElement = document.getElementById('response');
 // Get the canvas context
 const outputContext = outputCanvas.getContext('2d');
 
-// Function to start the webcam stream
+// Load face-api.js models
+async function loadModels() {
+    try {
+        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+        console.log('Models loaded successfully');
+    } catch (error) {
+        console.error('Error loading face-api.js models:', error);
+    }
+}
+
+// Start the webcam and initialize face detection
 async function startWebcamStream() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-
-        // Display local webcam stream
         localVideo.srcObject = stream;
+        
+        localVideo.addEventListener('loadeddata', () => {
+            outputCanvas.width = localVideo.videoWidth;
+            outputCanvas.height = localVideo.videoHeight;
+        });
 
-        // Start drawing the video to the canvas
-        drawToCanvas();
-
+        await loadModels();
+        detectFace();
     } catch (err) {
         console.error('Error accessing webcam or microphone:', err);
     }
 }
 
-// Function to draw the video to the canvas with mirror effect
-function drawToCanvas() {
-    // Set an interval to draw the video every 100 milliseconds
-    setInterval(() => {
-        // Clear the previous frame
+// Detect face and landmarks in the video feed
+async function detectFace() {
+    setInterval(async () => {
+        const detections = await faceapi.detectAllFaces(localVideo, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks();
+
+        console.log('Number of faces detected:', detections.length); // Log number of faces detected
+
+        // Clear previous drawings on the canvas
         outputContext.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
 
-        // Flip the image horizontally (mirror effect) and draw it to the canvas
+        // Draw mirrored video frame
         outputContext.save();
         outputContext.scale(-1, 1); // Flip horizontally
         outputContext.drawImage(localVideo, -outputCanvas.width, 0, outputCanvas.width, outputCanvas.height);
         outputContext.restore();
-    }, 100); // Draw every 100ms
+
+        // Draw detected face landmarks only if detections are found
+        if (detections.length > 0) {
+            faceapi.draw.drawFaceLandmarks(outputCanvas, detections);
+            console.log('Landmarks drawn on canvas'); // Confirm landmarks are drawn
+        }
+    }, 100); // Update every 100ms
 }
 
 // Voice Recognition Functions
 function speakText(text, callback) {
     const utterance = new SpeechSynthesisUtterance(text);
-
     utterance.onend = () => {
         if (callback) callback();
     };
-
     window.speechSynthesis.speak(utterance);
 }
 
@@ -103,5 +124,8 @@ button2.addEventListener("click", () => {
     speakText("How old are you?", startVoiceRecognition);
 });
 
-// Initialize webcam stream and media recorder
-window.onload = startWebcamStream;
+// Initialize webcam stream and load models on window load
+window.onload = async () => {
+    await loadModels();
+    await startWebcamStream();
+};

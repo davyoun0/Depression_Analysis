@@ -1,16 +1,14 @@
-// Elements for video and canvas streaming
-const localVideo = document.getElementById('localVideo');
+// Elements for canvas streaming
 const outputCanvas = document.getElementById('outputCanvas');
 const responseElement = document.getElementById('response');
-
-// Get the canvas context
 const outputContext = outputCanvas.getContext('2d');
 
 // Load face-api.js models
 async function loadModels() {
     try {
-        await faceapi.nets.tinyFaceDetector.loadFromUri('/models');
-        await faceapi.nets.faceLandmark68Net.loadFromUri('/models');
+        await faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model');
+        await faceapi.nets.faceLandmark68Net.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model');
+        await faceapi.nets.faceExpressionNet.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model');
         console.log('Models loaded successfully');
     } catch (error) {
         console.error('Error loading face-api.js models:', error);
@@ -21,27 +19,32 @@ async function loadModels() {
 async function startWebcamStream() {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localVideo.srcObject = stream;
         
-        localVideo.addEventListener('loadeddata', () => {
-            outputCanvas.width = localVideo.videoWidth;
-            outputCanvas.height = localVideo.videoHeight;
+        // Create a hidden video element for capturing the webcam feed
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+
+        // Set up the canvas dimensions once the video is loaded
+        video.addEventListener('loadeddata', () => {
+            outputCanvas.width = video.videoWidth;
+            outputCanvas.height = video.videoHeight;
         });
 
         await loadModels();
-        detectFace();
+        detectFace(video); // Pass the video element to the detectFace function
     } catch (err) {
         console.error('Error accessing webcam or microphone:', err);
     }
 }
 
 // Detect face and landmarks in the video feed
-async function detectFace() {
+function detectFace(video) {
     setInterval(async () => {
-        const detections = await faceapi.detectAllFaces(localVideo, new faceapi.TinyFaceDetectorOptions())
-            .withFaceLandmarks();
-
-        console.log('Number of faces detected:', detections.length); // Log number of faces detected
+        // Detect faces and landmarks
+        const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+            .withFaceLandmarks()
+            .withFaceExpressions();
 
         // Clear previous drawings on the canvas
         outputContext.clearRect(0, 0, outputCanvas.width, outputCanvas.height);
@@ -49,14 +52,12 @@ async function detectFace() {
         // Draw mirrored video frame
         outputContext.save();
         outputContext.scale(-1, 1); // Flip horizontally
-        outputContext.drawImage(localVideo, -outputCanvas.width, 0, outputCanvas.width, outputCanvas.height);
+        outputContext.drawImage(video, -outputCanvas.width, 0, outputCanvas.width, outputCanvas.height);
         outputContext.restore();
 
-        // Draw detected face landmarks only if detections are found
-        if (detections.length > 0) {
-            faceapi.draw.drawFaceLandmarks(outputCanvas, detections);
-            console.log('Landmarks drawn on canvas'); // Confirm landmarks are drawn
-        }
+        // Draw detected face landmarks and expressions
+        faceapi.draw.drawFaceLandmarks(outputCanvas, detections);
+        faceapi.draw.drawFaceExpressions(outputCanvas, detections);
     }, 100); // Update every 100ms
 }
 
@@ -80,6 +81,7 @@ function startVoiceRecognition() {
     recognition.onresult = (event) => {
         const response = event.results[0][0].transcript.toLowerCase();
         handleResponse(response);
+        window.speechSynthesis.cancel(); // Prevent any speech synthesis output
     };
 
     recognition.onerror = (event) => {
@@ -126,6 +128,5 @@ button2.addEventListener("click", () => {
 
 // Initialize webcam stream and load models on window load
 window.onload = async () => {
-    await loadModels();
     await startWebcamStream();
 };

@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video to Speech to Audio Listener to Scoring </title>
+    <title>Video to Speech with Facial Detection</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
         video {
             display: block;
             margin-top: 20px;
@@ -15,31 +23,33 @@
             transform: scaleX(-1);
         }
 
-
         canvas {
             display: none; /* Hide the canvas if you don't want it visible */
+        }
+
+        #outputCanvas {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <h1>Webcam Stream with Mirror Effect</h1>
+    <h1>Webcam Stream with Facial Detection</h1>
 
     <!-- Buttons for voice interaction -->
     <button id="question1">Ask: How are you?</button>
     <button id="question2">Ask: How old are you?</button>
 
     <!-- Video element for webcam streaming -->
-    <video id="localVideo" autoplay muted></video>
+    <video id="localVideo" autoplay muted></video> 
 
-    <!-- Canvas for mirroring the video -->
+    <!-- Canvas for drawing detections -->
     <canvas id="outputCanvas" width="640" height="480"></canvas>
 
     <!-- Area to display recognized text -->
     <p id="response">Waiting for voice input...</p>
 
-    <!-- External JS -->
+    <!-- Load face-api.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
     <script defer src="testing.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-
 </body>
 </html>

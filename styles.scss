@@ -1,0 +1,50 @@
+// Define variables for colors and sizing
+$border-color: black;
+$video-margin-top: 20px;
+
+// General styles for body
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+// Style for video elements
+video {
+    display: block;
+    margin-top: $video-margin-top;
+    border: 1px solid $border-color;
+
+    // Nested styles for specific video ID
+    &#localVideo {
+        transform: scaleX(-1); // Mirror the video
+    }
+}
+
+// Styling for canvas to match video appearance
+canvas {
+    display: block;
+    margin-top: $video-margin-top;
+    border: 1px solid $border-color;
+}
+
+// Style for buttons
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #0056b3;
+    }
+}
+
+// Styling for the response paragraph
+#response {
+    margin-top: $video-margin-top;
+    font-style: italic;
+    color: #333;
+}

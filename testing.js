@@ -81,6 +81,7 @@ function startVoiceRecognition() {
     recognition.onresult = (event) => {
         const response = event.results[0][0].transcript.toLowerCase();
         handleResponse(response);
+        totalScore(arr);
         window.speechSynthesis.cancel(); // Prevent any speech synthesis output
     };
 
@@ -112,6 +113,15 @@ function handleResponse(response) {
     }
 
     responseElement.textContent = `You said: ${response}, Numeric value: ${numericValue}`;
+}
+
+function totalScore(arr){ 
+    for(var z =0;z<arr.length;z++){
+        numericValue+=arr[z];
+    }
+    return z;
+
+    responseElement.textContent = 'Your total score is: ${z}';
 }
 
 // Set up event listeners for voice questions

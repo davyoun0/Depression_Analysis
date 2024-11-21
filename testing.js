@@ -124,17 +124,66 @@ function totalScore(arr){
     responseElement.textContent = 'Your total score is: ${z}';
 }
 
+
 // Set up event listeners for voice questions
 const button1 = document.getElementById("question1");
 const button2 = document.getElementById("question2");
+const button3 = document.getElementById("question3");
+const button4 = document.getElementById("question4");
+const button5 = document.getElementById("question5");
+const button6 = document.getElementById("question6");
+const button7 = document.getElementById("question7");
+const button8 = document.getElementById("question8");
+const button9 = document.getElementById("question9");
+const button10 = document.getElementById("question10");
+const button11 = document.getElementById("question11");
+const button12 = document.getElementById("question12");
+const button13 = document.getElementById("question13");
+const button14 = document.getElementById("question14");
 
 button1.addEventListener("click", () => {
-    speakText("How are you?", startVoiceRecognition);
+    speakText("Can you not stop feeling sad?", startVoiceRecognition);
+});
+button2.addEventListener("click", () => {
+    speakText("Do you feel alone?", startVoiceRecognition);
+});
+button3.addEventListener("click", () => {
+    speakText("Do you feel everything in your life went well?", startVoiceRecognition);
+});
+button4.addEventListener("click", () => {
+    speakText("Do you feel like you can't do anything right?", startVoiceRecognition);
+});
+button5.addEventListener("click", () => {
+    speakText("Do you feel lonely?", startVoiceRecognition);
+});
+button6.addEventListener("click", () => {
+    speakText("Do you feel sad?", startVoiceRecognition);
+});
+button7.addEventListener("click", () => {
+    speakText("Do you feel unhappy?", startVoiceRecognition);
+});
+button8.addEventListener("click", () => {
+    speakText("Do you think your life is bad?", startVoiceRecognition);
+});
+button9.addEventListener("click", () => {
+    speakText("Does being sad make hard for you to do things with your friends?", startVoiceRecognition);
+});
+button10.addEventListener("click", () => {
+    speakText("Do you not care about anything?", startVoiceRecognition);
+});
+button11.addEventListener("click", () => {
+    speakText("Do you feel stressed?", startVoiceRecognition);
+});
+button12.addEventListener("click", () => {
+    speakText("Do you feel too sad to eat?", startVoiceRecognition);
+});
+button13.addEventListener("click", () => {
+    speakText("Do you want to be by yourself?", startVoiceRecognition);
+});
+button14.addEventListener("click", () => {
+    speakText("Is it hard for you to have fun?", startVoiceRecognition);
 });
 
-button2.addEventListener("click", () => {
-    speakText("How old are you?", startVoiceRecognition);
-});
 
 // Initialize webcam stream and load models on window load
 window.onload = async () => {

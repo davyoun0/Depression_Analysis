@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facial Landmark Data</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        video {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+        #output {
+            white-space: pre-wrap;
+            text-align: left;
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            max-width: 600px;
+            margin: 20px auto;
+            overflow-y: auto;
+            height: 300px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Facial Landmark Tracking</h1>
+    <input type="file" id="videoInput" accept="video/*">
+    <video id="video" controls></video>
+    <div id="output">Facial landmark data will appear here...</div>
+    <script src="script.js"></script>
+</body>
+</html>
